@@ -3,21 +3,32 @@ import java.util.Scanner;
 
 public final class GameManager
 {
-	private final short maxSize = 5;
+	public final short maxSize = 3;
 	private Slot[][] Board;
 	private Player[] thePlayers;
 	private Scanner userInput;
 	private boolean isPlaying;
 	private int TurnCount;
 	
-	public GameManager()
+	private GameManager()
 	{
 		this.thePlayers = new Player[2];
 		this.Board = new Slot[maxSize][maxSize];
 		this.isPlaying = true;
 		this.TurnCount = 0;
+		instance = this;
 	}
 
+	private static GameManager instance;
+	
+	public static GameManager Instance()
+	{
+		if (instance == null)
+			instance = new GameManager();
+		
+		return instance;
+	}
+	
 	public void ShutDown()
 	{
 		this.thePlayers = null;
@@ -26,15 +37,11 @@ public final class GameManager
 	
 	public boolean Start()
 	{
-		System.out.println("Please Enter P to play or Q to quit:");
-		
+		System.out.println("Please Enter P to play or anything to quit:");
+
 		this.userInput = new Scanner(System.in);
 		
-		if (userInput.hasNext("Q") || userInput.hasNext("q"))
-		{
-			return false;
-		}
-		else if(userInput.hasNext("P") || userInput.hasNext("p"))
+		if(userInput.hasNext("P") || userInput.hasNext("p"))
 		{
 			char p1char;
 			char p2char;
@@ -51,9 +58,7 @@ public final class GameManager
 			this.SetupBoard(AI, p1char, p2char);
 		}
 		else
-		{
-			this.Start();
-		}
+			return false;
 		
 		return true;
 	}
@@ -82,6 +87,7 @@ public final class GameManager
 				}
 				else if(this.TurnCount == (this.maxSize * this.maxSize))
 				{
+					System.out.println("Tie!");
 					this.PlayAgain();
 				}
 				else 
@@ -90,7 +96,6 @@ public final class GameManager
 					this.thePlayers[0].myTurn = !this.thePlayers[0].myTurn;
 					this.thePlayers[1].myTurn = !this.thePlayers[1].myTurn;
 				}
-				
 			}
 			else
 				System.out.println("Already a character there!");
@@ -106,7 +111,7 @@ public final class GameManager
 		for (int i = 0; i < this.maxSize; i ++)
 		{
 			for(int j = 0; j < this.maxSize; j++)
-			{
+			{   
 				Slot slot = new Slot(i,j);
 				this.Board[i][j] = slot;
 			}
@@ -183,6 +188,11 @@ public final class GameManager
 	
 	private boolean CheckForWinner(Slot s, char c)
 	{
+		if(this.TurnCount < (this.maxSize * 2) - 1)
+			return false;
+		
+		System.out.println("Checking for winner");
+		
 		if(this.CheckRowAndColumn(s, c))
 			return true;
 		else if(this.CheckCorners(s, c))
@@ -361,8 +371,9 @@ public final class GameManager
 		this.Board[x][y].slotChar = c;
 	}
 	
-	private Slot getSlot(int x, int y)
+	public Slot getSlot(int x, int y)
 	{
 		return this.Board[x][y];
 	}
+
 }

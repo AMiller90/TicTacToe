@@ -3,12 +3,11 @@ public class Main
 {
  public static void main(String[] args)
  {
-	 GameManager tictactoe = new GameManager();
+
+	 if(GameManager.Instance().Start())
+		 GameManager.Instance().Run();
 	 
-	 if(tictactoe.Start())
-		 tictactoe.Run();
-	 
-	 tictactoe.ShutDown();
+	 GameManager.Instance().ShutDown();
  }
  
 }
