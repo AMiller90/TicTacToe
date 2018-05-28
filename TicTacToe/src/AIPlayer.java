@@ -17,8 +17,6 @@ public class AIPlayer extends Player
 	{
 		// Create temporary array of integers used for slot coords
 		int[] slotCoords = new int[2];
-
-		System.out.println("AI Searching...:");
 		
 		// If the AI has found a slot that is not empty
 		if(this.PickRandomSlot(slotCoords)) // Find a new placement in the algorithm function
@@ -78,7 +76,6 @@ public class AIPlayer extends Player
 			   {// Set the X and Y Coordinates of the neighbor slot.
 				   coords[0] = currentS.X + i;
 				   coords[1] = currentS.Y + j;
-				   System.out.println("Placed at: " +coords[0] + " " + coords[1]);
 				   // Return from the function
 				   return;
 			   }

@@ -157,10 +157,9 @@ public final class GameManager
 		{
 			for(int j = 0; j < this.maxSize; j++)
 			{   
-				// Create a new instance of a slot and give it the coordinates in the board
-				Slot slot = new Slot(i,j);
-				// Add the slot to the board
-				this.Board[i][j] = slot;
+				// Create a new instance of a slot and give it the coordinates in the board.
+				// Set the slot in the board
+				this.Board[i][j] = new Slot(i,j);
 			}
 		}
 		
@@ -179,12 +178,12 @@ public final class GameManager
 	
 	// Public DisplayBoard Function. Displays the board for user.
 	private void DisplayBoard()
-	{
+	{	
 		// Loop through the board
 		for (int i = 0; i < maxSize; i ++)
 		{
-			// Print a '|' for formatting
-			System.out.print('|');
+			// Print the i value and a '|' for formatting
+			System.out.print("|");
 			for(int j = 0; j < maxSize; j++)
 			{// Print the character of the current slot and a '|' for formatting.
 				System.out.print(this.Board[i][j].slotChar + "|");
@@ -377,7 +376,6 @@ public final class GameManager
 			// a right diagonal check
 			if(s.X == i && s.Y == j)
 			{// Set right diagonal to true and then break the loop
-				System.out.println("RightDiagonal!");
 				rightdiagonal = true;
 				break;
 			}				
@@ -425,5 +423,4 @@ public final class GameManager
 	{// Return the slot on the board from the passed in coordinates.
 		return this.Board[x][y];
 	}
-
 }

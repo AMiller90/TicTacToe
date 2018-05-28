@@ -6,7 +6,7 @@ public class Slot {
 	public int X;
 	// Public integer representing the slots y position on the board
 	public int Y;
-	// Public integer representing the slots character on the board
+	// Public char representing the slots character on the board
 	public char slotChar;
 	
 	// Slot Constructor. Takes the x and y integer arguments for setting position on the board.

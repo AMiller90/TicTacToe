@@ -26,7 +26,7 @@ public class RealPlayer extends Player
 		int max = GameManager.Instance().maxSize -1;
 		
 		// Tell user to enter first coordinates within range
-		System.out.println("Please Enter 1st Coordinate 0 - " + max + ":");
+		System.out.print("Please Enter 1st Coordinate 0 - " + max + ": ");
 		
 		// Store the reference and grab input from user
 		userInput = new Scanner(System.in);
@@ -44,7 +44,7 @@ public class RealPlayer extends Player
 			this.TakeTurn();
 		
 		// Tell user to enter second coordinate
-		System.out.println("Please Enter 2nd Coordinate 0 - " + max + ":");
+		System.out.print("Please Enter 2nd Coordinate 0 - " + max + ": ");
 		
 		// Store the reference and grab input from user
 		userInput = new Scanner(System.in);
