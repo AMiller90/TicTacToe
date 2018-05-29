@@ -5,7 +5,7 @@ import java.util.Scanner;
 public final class GameManager
 {
 	// Reference to the max size of rows/columns of board
-	public final short maxSize = 3;
+	public int maxSize = 3;
 	// Reference to the board
 	private Slot[][] Board;
 	// Reference to the players
@@ -16,20 +16,22 @@ public final class GameManager
 	private boolean isPlaying;
 	//Reference to the turn count of the game
 	private int TurnCount;
+	// Reference to the current player
+	private Player currentPlayer;
 	
 	// Private constructor
 	private GameManager()
 	{
 		// Initialize the players array
 		this.thePlayers = new Player[2];
-		// Initialize the board 2D array
-		this.Board = new Slot[maxSize][maxSize];
 		// Set isPlaying to true
 		this.isPlaying = true;
 		// The Turn count starts at 0
 		this.TurnCount = 0;
 		//Set the instance to this object
 		instance = this;
+		
+		Visuals.Instance();
 	}
 
 	// Private static instance reference
@@ -55,6 +57,32 @@ public final class GameManager
 	// Public Start function. Returns true if user wants to play, else false.
 	public boolean Start()
 	{
+		// Set temp instance to default
+		int size = this.maxSize;
+		
+		// Prompt user to pick the size of the rows/columns in the board
+		System.out.println("Please Enter a number 3 - 10 for number of rows/columns:");
+		
+		// Set the reference to a new input
+		this.userInput = new Scanner(System.in);
+		
+		// If the user put an integer
+		if (userInput.hasNextInt())
+		{ // Set the size variable to the number
+			size = userInput.nextInt();
+			
+		    // The number is not in range then set to default size of 3
+			if(size < 3 || size > 10)
+				size = 3;
+	
+		}
+		
+		// Set the new size
+		this.maxSize = size;
+		
+		// Initialize the board 2D array...by default it will be 3
+		this.Board = new Slot[this.maxSize][this.maxSize];
+
 		// Tell user to enter p to play or anything to quit.
 		System.out.println("Please Enter P to play or anything to quit:");
 
@@ -138,6 +166,9 @@ public final class GameManager
 					// Change turns
 					this.thePlayers[0].myTurn = !this.thePlayers[0].myTurn;
 					this.thePlayers[1].myTurn = !this.thePlayers[1].myTurn;
+					
+					// Set the new current player
+					this.currentPlayer = (this.thePlayers[0].myTurn) ? this.thePlayers[0] : this.thePlayers[1];
 				}
 			}
 			else // Else there is already a character there so loop again
@@ -170,21 +201,21 @@ public final class GameManager
 	    this.thePlayers[1] = (AI) ? new AIPlayer(p2) : new RealPlayer(p2);
 	    
 	    // Player that has X always goes first
-	    if(p1 == 'X')
-	    	this.thePlayers[0].myTurn = true;
-	    else // If p1 is not X, then p2 goes first
-	    	this.thePlayers[1].myTurn = true;
+	    currentPlayer = (p1 == 'X') ? this.thePlayers[0] : this.thePlayers[1];
+	    currentPlayer.myTurn = true;
 	}
 	
 	// Public DisplayBoard Function. Displays the board for user.
 	private void DisplayBoard()
 	{	
+		System.out.println("It is Player " + currentPlayer.playerChar + "'s turn");
+		
 		// Loop through the board
-		for (int i = 0; i < maxSize; i ++)
+		for (int i = 0; i < this.maxSize; i ++)
 		{
 			// Print the i value and a '|' for formatting
 			System.out.print("|");
-			for(int j = 0; j < maxSize; j++)
+			for(int j = 0; j < this.maxSize; j++)
 			{// Print the character of the current slot and a '|' for formatting.
 				System.out.print(this.Board[i][j].slotChar + "|");
 			}
