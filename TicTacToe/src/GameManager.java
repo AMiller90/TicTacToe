@@ -31,6 +31,7 @@ public final class GameManager
 		//Set the instance to this object
 		instance = this;
 		
+		// Instance of the Visuals class
 		Visuals.Instance();
 	}
 
@@ -57,32 +58,6 @@ public final class GameManager
 	// Public Start function. Returns true if user wants to play, else false.
 	public boolean Start()
 	{
-		// Set temp instance to default
-		int size = this.maxSize;
-		
-		// Prompt user to pick the size of the rows/columns in the board
-		System.out.println("Please Enter a number 3 - 10 for number of rows/columns:");
-		
-		// Set the reference to a new input
-		this.userInput = new Scanner(System.in);
-		
-		// If the user put an integer
-		if (userInput.hasNextInt())
-		{ // Set the size variable to the number
-			size = userInput.nextInt();
-			
-		    // The number is not in range then set to default size of 3
-			if(size < 3 || size > 10)
-				size = 3;
-	
-		}
-		
-		// Set the new size
-		this.maxSize = size;
-		
-		// Initialize the board 2D array...by default it will be 3
-		this.Board = new Slot[this.maxSize][this.maxSize];
-
 		// Tell user to enter p to play or anything to quit.
 		System.out.println("Please Enter P to play or anything to quit:");
 
@@ -95,6 +70,9 @@ public final class GameManager
 			// Set up temp variables
 			char p1char;
 			char p2char;
+			
+			// Initialize the board 2D array...by default it will be 3
+			this.Board = new Slot[this.maxSize][this.maxSize];
 			
 			// Ask user which character to use
 			System.out.println("Play as X or O?");
@@ -130,6 +108,9 @@ public final class GameManager
 		
 		// Display the board
 		this.DisplayBoard();
+		
+		// Display the current characters turn
+		System.out.println("It is Player " + currentPlayer.playerChar + "'s turn");
 		
 		// While the game isPlaying
 		while(isPlaying)
@@ -169,6 +150,8 @@ public final class GameManager
 					
 					// Set the new current player
 					this.currentPlayer = (this.thePlayers[0].myTurn) ? this.thePlayers[0] : this.thePlayers[1];
+					// Display the current characters turn
+					System.out.println("It is Player " + currentPlayer.playerChar + "'s turn");
 				}
 			}
 			else // Else there is already a character there so loop again
@@ -207,9 +190,7 @@ public final class GameManager
 	
 	// Public DisplayBoard Function. Displays the board for user.
 	private void DisplayBoard()
-	{	
-		System.out.println("It is Player " + currentPlayer.playerChar + "'s turn");
-		
+	{			
 		// Loop through the board
 		for (int i = 0; i < this.maxSize; i ++)
 		{
@@ -263,13 +244,20 @@ public final class GameManager
 		    	this.thePlayers[0].myTurn = true;
 		    	// Set player 2 to false
 		    	this.thePlayers[1].myTurn = false;
+		    	// Set the currentPlayer
+		    	this.currentPlayer = this.thePlayers[0];
 		    }
 		    else // Player 1 has O
 		    {// Set player 1 to false
 		    	this.thePlayers[0].myTurn = false;
 		    	// Set player 2 to true
 		    	this.thePlayers[1].myTurn = true;
+		    	// Set the currentPlayer
+		    	this.currentPlayer = this.thePlayers[1];
 		    }
+		    
+		 // Display the current characters turn
+			System.out.println("It is Player " + currentPlayer.playerChar + "'s turn");
 		}
 		else // Else the user pressed something else and the game ends
 		{
