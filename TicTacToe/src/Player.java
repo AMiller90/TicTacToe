@@ -5,6 +5,8 @@ public abstract class Player
 	public char playerChar;
 	// Determines if it is this players turn or not
 	public boolean myTurn;
+	// Reference to the coordinates selected for character placement on the board
+	public int[] coords;
 	// Abstract function for player taking their turn
 	public abstract int[] TakeTurn();
 }

@@ -10,6 +10,8 @@ public class AIPlayer extends Player
 		this.myTurn = false;
 		// Set the character to the passed in character
 		this.playerChar = character;
+		// Initialize the coordinates
+		this.coords = new int[2];
 	}
 	
 	// Take Turn function used for the AI Player taking its turn

@@ -17,7 +17,13 @@ public final class GameManager
 	//Reference to the turn count of the game
 	private int TurnCount;
 	// Reference to the current player
-	private Player currentPlayer;
+	public Player currentPlayer;
+	//Reference to the player 1 character
+	private char p1Char;
+	//Reference to the player 2 character
+	private char p2Char;
+	//Reference to the AI Choice
+	private boolean AIChoice;
 	
 	// Private constructor
 	private GameManager()
@@ -30,9 +36,6 @@ public final class GameManager
 		this.TurnCount = 0;
 		//Set the instance to this object
 		instance = this;
-		
-		// Instance of the Visuals class
-		Visuals.Instance();
 	}
 
 	// Private static instance reference
@@ -57,45 +60,48 @@ public final class GameManager
 	
 	// Public Start function. Returns true if user wants to play, else false.
 	public boolean Start()
-	{
-		// Tell user to enter p to play or anything to quit.
-		System.out.println("Please Enter P to play or anything to quit:");
-
-		// Set the reference to a new input
-		this.userInput = new Scanner(System.in);
-		
-		// If the user entered P or p
-		if(userInput.hasNext("P") || userInput.hasNext("p"))
-		{
-			// Set up temp variables
-			char p1char;
-			char p2char;
-			
-			// Initialize the board 2D array...by default it will be 3
-			this.Board = new Slot[this.maxSize][this.maxSize];
-			
-			// Ask user which character to use
-			System.out.println("Play as X or O?");
-			// Set the reference to a new input
-			this.userInput = new Scanner(System.in);
-			// If the user chose X then player 1 is X, else player 1 is O
-			p1char = (userInput.hasNext("X") || userInput.hasNext("x")) ? 'X' : 'O';
-			// Player 2 will be O if player 1 is X, else player 2 will be X
-			p2char = (p1char == 'X') ? 'O' : 'X';
-			
-			// Ask user if they would like to play against AI
-			System.out.println("Play against AI: Y/N?");
-			// Set the reference to a new input
-			this.userInput = new Scanner(System.in);
-			// If the user chose Y, then store true as reference, else store false.
-			boolean AI = (userInput.hasNext("Y") || userInput.hasNext("y")) ? true : false;
-			
-			// Set up the board - pass in AI, p1Char and p2Char
-			this.SetupBoard(AI, p1char, p2char);
-		}
-		else // Else return false if user entered anything other than p
-			return false;
-		
+	{	
+		// Instance of the Visuals class
+	    Visuals.Instance();
+	    
+//		 // Tell user to enter p to play or anything to quit.
+//		 		System.out.println("Please Enter P to play or anything to quit:");
+//
+//		 		// Set the reference to a new input
+//		 		this.userInput = new Scanner(System.in);
+//		 		
+//		 		// If the user entered P or p
+//		 		if(userInput.hasNext("P") || userInput.hasNext("p"))
+//		 		{
+//		 			// Set up temp variables
+//		 			char p1char;
+//		 			char p2char;
+//		 			
+//		 			// Initialize the board 2D array...by default it will be 3
+//		 			this.Board = new Slot[this.maxSize][this.maxSize];
+//		 			
+//		 			// Ask user which character to use
+//		 			System.out.println("Play as X or O?");
+//		 			// Set the reference to a new input
+//		 			this.userInput = new Scanner(System.in);
+//		 			// If the user chose X then player 1 is X, else player 1 is O
+//		 			p1char = (userInput.hasNext("X") || userInput.hasNext("x")) ? 'X' : 'O';
+//		 			// Player 2 will be O if player 1 is X, else player 2 will be X
+//		 			p2char = (p1char == 'X') ? 'O' : 'X';
+//		 			
+//		 			// Ask user if they would like to play against AI
+//		 			System.out.println("Play against AI: Y/N?");
+//		 			// Set the reference to a new input
+//		 			this.userInput = new Scanner(System.in);
+//		 			// If the user chose Y, then store true as reference, else store false.
+//		 			boolean AI = (userInput.hasNext("Y") || userInput.hasNext("y")) ? true : false;
+//		 			
+//		 			// Set up the board
+//		 			this.SetupBoard();
+//		 		}
+//		 		else // Else return false if user entered anything other than p
+//		 			return false;
+//			
 		// Return true
 		return true;
 	}
@@ -107,10 +113,7 @@ public final class GameManager
 		int[] coords;
 		
 		// Display the board
-		this.DisplayBoard();
-		
-		// Display the current characters turn
-		System.out.println("It is Player " + currentPlayer.playerChar + "'s turn");
+		//.DisplayBoard();
 		
 		// While the game isPlaying
 		while(isPlaying)
@@ -163,9 +166,12 @@ public final class GameManager
 		return this.isPlaying;
 	}
 	
-	// Private SetUpBoard Function. Takes a boolean for AI, Char for player1 and Char for player2
-	private void SetupBoard(boolean AI, char p1, char p2)
+	// Public SetUpBoard Function. Setups the board with slots and players.
+	public void SetupBoard()
 	{
+		// Initialize the board 2D array...by default it will be 3
+		this.Board = new Slot[this.maxSize][this.maxSize];
+			
 		// Set up the slots and store into the board
 		for (int i = 0; i < this.maxSize; i ++)
 		{
@@ -178,13 +184,13 @@ public final class GameManager
 		}
 		
 		// Set the first player as real player
-	    this.thePlayers[0] = new RealPlayer(p1);
+	    this.thePlayers[0] = new RealPlayer(this.p1Char);
 		
 	    // Set the second player as AI or Real Player
-	    this.thePlayers[1] = (AI) ? new AIPlayer(p2) : new RealPlayer(p2);
+	    this.thePlayers[1] = (this.AIChoice) ? new AIPlayer(this.p2Char) : new RealPlayer(this.p2Char);
 	    
 	    // Player that has X always goes first
-	    currentPlayer = (p1 == 'X') ? this.thePlayers[0] : this.thePlayers[1];
+	    currentPlayer = (this.p1Char == 'X') ? this.thePlayers[0] : this.thePlayers[1];
 	    currentPlayer.myTurn = true;
 	}
 	
@@ -441,5 +447,21 @@ public final class GameManager
 	public Slot getSlot(int x, int y)
 	{// Return the slot on the board from the passed in coordinates.
 		return this.Board[x][y];
+	}
+
+	// Public setPlayerCharacter Function. Takes 2 chars as the characters for the players.
+	public void setPlayerCharacters(char c1, char c2)
+	{
+		// Set p1Char to c1
+		this.p1Char = c1;
+		// Set p2Char to c2
+		this.p2Char = c2;
+	}
+
+	// Public setAIChoice Function. Sets the AI Choice to te passed in argument
+	public void setAIChoice(boolean ai)
+	{
+		// Set AIChoice to ai
+		this.AIChoice = ai;
 	}
 }
