@@ -4,11 +4,7 @@ public class Main
 {
 	 public static void main(String[] args)
 	 {
-		 // If the instance starts up then run it
+		 // Start the GameManager Instance
 		 GameManager.Instance().Start();
-			 //GameManager.Instance().Run();
-
-		 // Shutdown the instance
-		 //GameManager.Instance().ShutDown();
 	 }
 }

@@ -9,20 +9,16 @@ public final class GameManager
 	// Reference to the board
 	private Slot[][] Board;
 	// Reference to the players
-	private Player[] thePlayers;
-	// Reference to userInput
-	private Scanner userInput;
-	// Reference for determining if the game is still running or not
-	private boolean isPlaying;
+	public Player[] thePlayers;
 	//Reference to the turn count of the game
 	private int TurnCount;
 	// Reference to the current player
 	public Player currentPlayer;
-	//Reference to the player 1 character
+	// Reference to the player 1 character
 	private char p1Char;
-	//Reference to the player 2 character
+	// Reference to the player 2 character
 	private char p2Char;
-	//Reference to the AI Choice
+	// Reference to the AI Choice
 	private boolean AIChoice;
 	
 	// Private constructor
@@ -30,8 +26,6 @@ public final class GameManager
 	{
 		// Initialize the players array
 		this.thePlayers = new Player[2];
-		// Set isPlaying to true
-		this.isPlaying = true;
 		// The Turn count starts at 0
 		this.TurnCount = 0;
 		//Set the instance to this object
@@ -58,112 +52,70 @@ public final class GameManager
 		this.Board = null;
 	}
 	
-	// Public Start function. Returns true if user wants to play, else false.
-	public boolean Start()
+	// Public Start function.
+	public void Start()
 	{	
 		// Instance of the Visuals class
 	    Visuals.Instance();
-	    
-//		 // Tell user to enter p to play or anything to quit.
-//		 		System.out.println("Please Enter P to play or anything to quit:");
-//
-//		 		// Set the reference to a new input
-//		 		this.userInput = new Scanner(System.in);
-//		 		
-//		 		// If the user entered P or p
-//		 		if(userInput.hasNext("P") || userInput.hasNext("p"))
-//		 		{
-//		 			// Set up temp variables
-//		 			char p1char;
-//		 			char p2char;
-//		 			
-//		 			// Initialize the board 2D array...by default it will be 3
-//		 			this.Board = new Slot[this.maxSize][this.maxSize];
-//		 			
-//		 			// Ask user which character to use
-//		 			System.out.println("Play as X or O?");
-//		 			// Set the reference to a new input
-//		 			this.userInput = new Scanner(System.in);
-//		 			// If the user chose X then player 1 is X, else player 1 is O
-//		 			p1char = (userInput.hasNext("X") || userInput.hasNext("x")) ? 'X' : 'O';
-//		 			// Player 2 will be O if player 1 is X, else player 2 will be X
-//		 			p2char = (p1char == 'X') ? 'O' : 'X';
-//		 			
-//		 			// Ask user if they would like to play against AI
-//		 			System.out.println("Play against AI: Y/N?");
-//		 			// Set the reference to a new input
-//		 			this.userInput = new Scanner(System.in);
-//		 			// If the user chose Y, then store true as reference, else store false.
-//		 			boolean AI = (userInput.hasNext("Y") || userInput.hasNext("y")) ? true : false;
-//		 			
-//		 			// Set up the board
-//		 			this.SetupBoard();
-//		 		}
-//		 		else // Else return false if user entered anything other than p
-//		 			return false;
-//			
-		// Return true
-		return true;
 	}
 	
-	// Public Run function. The Game Loop.
-	public boolean Run()
+	// Public Run function.
+	public void Run()
 	{
 		// Temp coords
 		int[] coords;
 		
-		// Display the board
-		//.DisplayBoard();
+		coords = this.currentPlayer.TakeTurn();
 		
-		// While the game isPlaying
-		while(isPlaying)
+		// Check for empty slot 
+		if(this.getSlot(coords[0], coords[1]).slotChar == ' ')
 		{
-			// Set the coords to the returned coords. If it's player 1s turn then call the take turn function for them
-			// Else, call player 2s take turn function
-			coords = (this.thePlayers[0].myTurn) ? this.thePlayers[0].TakeTurn() : this.thePlayers[1].TakeTurn();
+			// Increase the turn count
+			this.TurnCount++;
+			// Get the current players char
+			char c = this.currentPlayer.playerChar;
 			
-			// Check for empty slot 
-			if(this.getSlot(coords[0], coords[1]).slotChar == ' ')
+			// Set the character of the slot to the passed in character
+			this.getSlot(coords[0], coords[1]).slotChar = c;
+			// Set the button to the passed in char adding whitespace
+			String s = c + " ";
+			Visuals.Instance().SetCharacterOnButton(coords[0], coords[1], s);
+			
+			// If a winner was found
+			if(this.CheckForWinner(this.getSlot(coords[0], coords[1]), c))
 			{
-				// Increase the turn count
-				this.TurnCount++;
-				// Grab the character of the player1 if its their turn
-				// If not, then get the character of player2
-				char c = (this.thePlayers[0].myTurn) ? this.thePlayers[0].playerChar : this.thePlayers[1].playerChar;
-				// Set the slot character to the character of the player that placed it
-				this.setSlotChar(coords[0], coords[1], c);
-				// Display the board
-				this.DisplayBoard();
+				// Increment the win counter
+				this.currentPlayer.wins++;				
+				// Call Play Again function
+				this.PlayAgain();
+				Visuals.Instance().UpdateText("New Game! It is Player " + currentPlayer.playerChar + "'s turn");
 				
-				// If a winner was found
-				if(this.CheckForWinner(this.getSlot(coords[0], coords[1]), c))
-				{// Call Play Again function
-					this.PlayAgain();
-				} // If the turn count is equal to the size of the board then it is a tie
-				else if(this.TurnCount == (this.maxSize * this.maxSize))
-				{
-					// Call Play Again Function
-					this.PlayAgain();
-				}
-				else // Else if there is no winner and no tie then change turns 
-				{
-					// Change turns
-					this.thePlayers[0].myTurn = !this.thePlayers[0].myTurn;
-					this.thePlayers[1].myTurn = !this.thePlayers[1].myTurn;
-					
-					// Set the new current player
-					this.currentPlayer = (this.thePlayers[0].myTurn) ? this.thePlayers[0] : this.thePlayers[1];
-					// Display the current characters turn
-					System.out.println("It is Player " + currentPlayer.playerChar + "'s turn");
-				}
+			} // If the turn count is equal to the size of the board then it is a tie
+			else if(this.TurnCount == (this.maxSize * this.maxSize))
+			{
+				// Call Play Again Function
+				this.PlayAgain();
+				 // Update the Visuals Text
+				Visuals.Instance().UpdateText("Tie Game! New Game! It is Player " + currentPlayer.playerChar + "'s turn");
 			}
-			else // Else there is already a character there so loop again
-				System.out.println("Already a character there!");
-
-		}
-		
-		// Return isPlaying
-		return this.isPlaying;
+			else // Else if there is no winner and no tie then change turns 
+			{
+				// Change turns
+				this.thePlayers[0].myTurn = !this.thePlayers[0].myTurn;
+				this.thePlayers[1].myTurn = !this.thePlayers[1].myTurn;
+				
+				// Set the new current player
+				this.currentPlayer = (this.thePlayers[0].myTurn) ? this.thePlayers[0] : this.thePlayers[1];
+				 // Update the Visuals Text
+				Visuals.Instance().UpdateText("It is Player " + currentPlayer.playerChar + "'s turn");
+				
+				// If the current player is AI then run the function again so it can take its turn
+				if(this.currentPlayer instanceof AIPlayer)
+					this.Run();
+			}
+		}// Else if there is already a character and its the AIs turn, run the function again so the AI can take its turn
+		else if(this.currentPlayer instanceof AIPlayer)
+			this.Run();
 	}
 	
 	// Public SetUpBoard Function. Setups the board with slots and players.
@@ -185,7 +137,7 @@ public final class GameManager
 		
 		// Set the first player as real player
 	    this.thePlayers[0] = new RealPlayer(this.p1Char);
-		
+		    
 	    // Set the second player as AI or Real Player
 	    this.thePlayers[1] = (this.AIChoice) ? new AIPlayer(this.p2Char) : new RealPlayer(this.p2Char);
 	    
@@ -194,59 +146,37 @@ public final class GameManager
 	    currentPlayer.myTurn = true;
 	}
 	
-	// Public DisplayBoard Function. Displays the board for user.
-	private void DisplayBoard()
-	{			
-		// Loop through the board
-		for (int i = 0; i < this.maxSize; i ++)
-		{
-			// Print the i value and a '|' for formatting
-			System.out.print("|");
-			for(int j = 0; j < this.maxSize; j++)
-			{// Print the character of the current slot and a '|' for formatting.
-				System.out.print(this.Board[i][j].slotChar + "|");
-			}
-			// Print a ' ' for formatting
-			System.out.println(' ');
-		}
-	}
-	
 	// Private ClearBoard function. Clears the board.
 	private void ClearBoard()
 	{
 		// Loop through the board
-			for (int i = 0; i < this.maxSize; i ++)
+		for (int i = 0; i < this.maxSize; i ++)
+		{
+			for(int j = 0; j < this.maxSize; j++)
 			{
-				for(int j = 0; j < this.maxSize; j++)
-				{
-					// Set all the slot characters back to ' '
-					this.Board[i][j].slotChar = ' ';
-				}
+				// Set all the slot characters back to ' '
+				this.Board[i][j].slotChar = ' ';
 			}
+		}
+		
+		Visuals.Instance().ClearBoard();
+			
 	}
 	
 	// Private PlayAgain Function. Gives the user the choice of playing again or not.
 	private void PlayAgain()
 	{
-		// Ask user whether to play again or not
-		System.out.println("Would You Like To Play Again..Y/N? ");
-		// Store reference to the input
-		this.userInput = new Scanner(System.in);
-		
-		// If the input is Y or y
-		if (userInput.hasNext("Y") || userInput.hasNext("y"))
-		{
+			Player winner = this.currentPlayer;
+			
 			// Call the ClearBoard function
 			this.ClearBoard();
-			// Call the DisplayBoard function
-			this.DisplayBoard();
 			// Set the turn count back to 0
 			this.TurnCount = 0;
 			
 			// Reset whose turn it is
 			// Player that has X always goes first
 		    if(this.thePlayers[0].playerChar == 'X')
-		    { // Set player 1 to true
+		    { 	// Set player 1 to true
 		    	this.thePlayers[0].myTurn = true;
 		    	// Set player 2 to false
 		    	this.thePlayers[1].myTurn = false;
@@ -262,14 +192,12 @@ public final class GameManager
 		    	this.currentPlayer = this.thePlayers[1];
 		    }
 		    
-		 // Display the current characters turn
-			System.out.println("It is Player " + currentPlayer.playerChar + "'s turn");
-		}
-		else // Else the user pressed something else and the game ends
-		{
-			// Set isPlaying to false and end the game
-			this.isPlaying = false;
-		}
+		    // Update the Visuals Text
+			Visuals.Instance().UpdateText("Player " + winner.playerChar + " wins! New Game! It is Player " + currentPlayer.playerChar + "'s turn");
+			
+			if(GameManager.Instance().currentPlayer instanceof AIPlayer)
+				Run();
+		
 	}
 	
 	// Private CheckForWinner Function. Takes a Slot as an argument to check and the character to check against.
@@ -309,7 +237,6 @@ public final class GameManager
 				if (counter == this.maxSize)
 				{
 					// We have a winner
-					System.out.println("Winner is: " + c);
 					// Return true
 					return true;
 				}
@@ -332,7 +259,6 @@ public final class GameManager
 				if (counter == this.maxSize)
 				{
 					// We have a winner
-					System.out.println("Winner is: " + c);
 					// Return true
 					return true;
 				}
@@ -380,7 +306,6 @@ public final class GameManager
 					if (counter == this.maxSize)
 					{
 						// We have a winner
-						System.out.println("Winner is: " + c);
 						// Return true
 						return true;
 					}
@@ -419,7 +344,6 @@ public final class GameManager
 					if (counter == this.maxSize)
 					{
 						// We have a winner
-						System.out.println("Winner is: " + c);
 						// Return true
 						return true;
 					}
@@ -435,12 +359,6 @@ public final class GameManager
 		
 		// Return false. There was no winning match in any of the diagonal checks from the corners.
 		return false;
-	}
-	
-	// Private setSlotChar Function. Takes 2 integers as the coordinates on the board to find the slot and the character to set in it.
-	private void setSlotChar(int x, int y, char c) {
-		// Set the character of the slot to the passed in character
-		this.Board[x][y].slotChar = c;
 	}
 	
 	// Public GetSlot Function. Takes 2 integers as the coordinates on the board to find the slot.

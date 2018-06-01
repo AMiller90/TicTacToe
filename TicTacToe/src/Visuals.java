@@ -7,7 +7,7 @@ import javax.swing.*;
 
 public class Visuals
 {
-	public final JFrame window;
+	private final JFrame window;
 	private Container pane;
 	private JButton board[][];
 	private JMenuBar menuBar;
@@ -15,14 +15,17 @@ public class Visuals
 	private JMenuItem newGame;
 	private JMenuItem quitGame;
 	private Label playerTurnText;
+	private Label winLossCounter;
 	private boolean playerAIChoice;
+	private boolean newGameClicked;
 	
 	private Map<String, ActionListener> actionsMap = new HashMap<>();
+	private Map<String, Integer> componentsMap = new HashMap<>();
 	
 	private Visuals()
 	{
 		instance = this;
-
+		
 		this.window = new JFrame();
 		this.window.setTitle("TicTacToe");
 		this.window.setSize(600, 600);
@@ -30,8 +33,9 @@ public class Visuals
 		this.window.setResizable(false);
 		this.pane = this.window.getContentPane();
 		this.pane.setLayout(new FlowLayout(FlowLayout.LEFT));
+		this.newGameClicked = false;
 		
-		this.InitializeMap();
+		this.InitializeMaps();
 		this.SetUpUIElements();
 
 		this.window.setVisible(true);
@@ -46,7 +50,7 @@ public class Visuals
 		return instance = (instance == null) ? new Visuals() : instance;
 	}
 
-	private void InitializeMap()
+	private void InitializeMaps()
 	{
 		// Quit
 		this.actionsMap.put("Quit", new ActionListener()
@@ -54,6 +58,7 @@ public class Visuals
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{
+				GameManager.Instance().ShutDown();
 				System.exit(0);
 			}
 		} );
@@ -64,11 +69,12 @@ public class Visuals
 			@Override
 			public void actionPerformed(ActionEvent e)
 			{	
-				if(pane.getComponentCount() > 0)
+				if(pane.getComponentCount() > 0 && !newGameClicked)
 				{
-					SetComponentVisibility(0,true);
-					SetComponentVisibility(1, true);
+					SetComponentVisibility(componentsMap.get("SizeLabel"), true);
+					SetComponentVisibility(componentsMap.get("SizeField"), true);
 					window.setVisible(true);
+					newGameClicked = true;
 				}			
 			}
 		} );
@@ -104,14 +110,14 @@ public class Visuals
 					// Set up the board size
 					board = new JButton[size][size];
 					// Turn off the label visibility
-					SetComponentVisibility(0,false);
+					SetComponentVisibility(componentsMap.get("SizeLabel"), false);
 					// Turn off the JTextField visibility
 					i.setVisible(false);
 					// Set the text back to empty
 					i.setText("");
 					
-					SetComponentVisibility(2, true);
-					SetComponentVisibility(3, true);
+					SetComponentVisibility(componentsMap.get("CCLabel"), true);
+					SetComponentVisibility(componentsMap.get("CCField"), true);
 					window.setVisible(true);
 				}	
 			}
@@ -132,33 +138,29 @@ public class Visuals
 					JTextField i = (JTextField)o;
 
 					// Temp char variable
-					char p1 = ' ';
+					String s = i.getText().toUpperCase();
+					char p1 = s.charAt(0);			
 					char p2 = ' ';
 					
-					// If string is empty set default to X
-					if(i.getText().isEmpty())
-						p1 = 'X';
 					// Else if the user puts another character besides X or O then just set it to X
-					else if((p1 != 'x' || p1 != 'X') && (p1 != 'o' || p1 != 'O'))
+					if(p1 != 'X' && p1 != 'O')
 						p1 = 'X';
-					else // Else set the player character returned from the first character of the text
-						p1 = i.getText().charAt(0);
 					
-					// If p1 is X or x then p2 will be O else p2 will be X
-					p2 = (p1 == 'X' || p1 == 'x') ? 'O' : 'X';
+					// If p1 is X then p2 will be O else p2 will be X
+					p2 = (p1 == 'X') ? 'O' : 'X';
 					
 					// Set the reference to the playerCharacterChoice variable
 					GameManager.Instance().setPlayerCharacters(p1, p2);
 					
 					// Turn off the label visibility
-					SetComponentVisibility(2,false);
+					SetComponentVisibility(componentsMap.get("CCLabel"), false);
 					// Turn off the JTextField visibility
 					i.setVisible(false);
 					// Set the text back to empty
 					i.setText("");
 					
-					SetComponentVisibility(4, true);
-					SetComponentVisibility(5, true);
+					SetComponentVisibility(componentsMap.get("AILabel"), true);
+					SetComponentVisibility(componentsMap.get("AIField"), true);
 					window.setVisible(true);
 				}	
 			}
@@ -179,25 +181,23 @@ public class Visuals
 					JTextField i = (JTextField)o;
 
 					// Temp char variable
-					char AIChoice = ' ';
-					
-					// If string is empty set default to N
-					if(i.getText().isEmpty())
+					String s = i.getText().toUpperCase();
+					char AIChoice = s.charAt(0);
+
+					//If the user puts another character besides Y or N then just set it to N
+					if(AIChoice != 'Y' && AIChoice != 'N')
+					{
 						AIChoice = 'N';
-					// Else if the user puts another character besides Y or N then just set it to N
-					else if((AIChoice != 'y' || AIChoice != 'Y') && (AIChoice != 'n' || AIChoice != 'N'))
-						AIChoice = 'N';
-					else // Else set the player character returned from the first character of the text
-						AIChoice = i.getText().charAt(0);
+					}
 					
-					// If AIChoice is Y or y then AIChoice will be true else AIChoice will be false
-					playerAIChoice = (AIChoice == 'Y' || AIChoice == 'y') ? true : false;
+					// If AIChoice is Y then AIChoice will be true else AIChoice will be false
+					playerAIChoice = (AIChoice == 'Y') ? true : false;
 					
 					// Set the AIChoice to the playerAIChoice
 					GameManager.Instance().setAIChoice(playerAIChoice);
-					
+									
 					// Turn off the label visibility
-					SetComponentVisibility(4,false);
+					SetComponentVisibility(componentsMap.get("AILabel"), false);
 					// Turn off the JTextField visibility
 					i.setVisible(false);
 					// Set the text back to empty
@@ -223,48 +223,37 @@ public class Visuals
 					// Cast it
 					JButton i = (JButton)o;
 					
-					
-					int x = Character.getNumericValue(i.getName().charAt(0));
-					int y = Character.getNumericValue(i.getName().charAt(1));
-					
-					GameManager.Instance().currentPlayer.coords[0] = x;
-					GameManager.Instance().currentPlayer.coords[1] = y;
-					GameManager.Instance().currentPlayer.TakeTurn();
-					System.out.println(GameManager.Instance().currentPlayer.coords[0] + " " + GameManager.Instance().currentPlayer.coords[1]);
+					if(i.getText() == " ")
+					{
+						int x = Character.getNumericValue(i.getName().charAt(0));
+						int y = Character.getNumericValue(i.getName().charAt(1));
+						
+						GameManager.Instance().currentPlayer.coords[0] = x;
+						GameManager.Instance().currentPlayer.coords[1] = y;
+						GameManager.Instance().Run();
+					}
 				}	
 			}
 		});
 		
-		// Position
-//		this.actionsMap.put("Position", new ActionListener()
-//		{
-//			@Override
-//			public void actionPerformed(ActionEvent e)
-//			{	// Grab reference to the source
-//				Object o = e.getSource();
-//				
-//				// If it is an instance of a JMenuItem
-//				if(o instanceof JTextField)
-//				{
-//					// Cast it
-//					JTextField i = (JTextField)o;
-//					
-//					// Set the max size of the grid to the number returned from the first character of the text
-//					int x = Character.getNumericValue(i.getText().charAt(0));
-//					
-//					if(i.getName() == "XPos" && (x >= 0 && x <= GameManager.Instance().maxSize - 1))
-//					{
-//						System.out.println("XWoohoo!");
-//						// Set the currentPlayers xCoordinate here
-//					}
-//					else if(i.getName() == "YPos" && (x >= 0 && x <= GameManager.Instance().maxSize - 1))
-//					{
-//						// Set the currentPlayers yCoordinate here
-//						System.out.println("YWoohoo!");
-//					}
-//				}	
-//			}
-//		});
+		// Size Label
+		this.componentsMap.put("SizeLabel", 0);
+		// Size Field
+		this.componentsMap.put("SizeField", 1);
+		// Character Choice Label
+		this.componentsMap.put("CCLabel", 2);
+		// Character Choice Field
+		this.componentsMap.put("CCField", 3);
+		// AI Label
+		this.componentsMap.put("AILabel", 4);
+		// AI Field
+		this.componentsMap.put("AIField", 5);
+		// Button Panel
+		this.componentsMap.put("ButtonPanel", 6);
+		// Current Player Label
+		this.componentsMap.put("CPLabel", 7);
+		// Current Wins Label
+		this.componentsMap.put("WinsLabel", 8);
 	}
 
 	private void SetUpUIElements()
@@ -330,8 +319,14 @@ public class Visuals
 	{	
 		GameManager.Instance().SetupBoard();
 		
-		Label l = new Label("It is Player " + GameManager.Instance().currentPlayer.playerChar + "'s turn");
-		this.playerTurnText = l;
+		Label pc = new Label("It is Player " + GameManager.Instance().currentPlayer.playerChar + "'s turn");
+		this.playerTurnText = pc;
+		
+		String winLoss = "Player " + GameManager.Instance().thePlayers[0].playerChar + "'s wins " + GameManager.Instance().thePlayers[0].wins
+				+ "  Player " + GameManager.Instance().thePlayers[1].playerChar + "'s wins " + GameManager.Instance().thePlayers[1].wins;
+		
+		Label wl = new Label(winLoss);
+		this.winLossCounter = wl;
 		
 		JPanel jPanel = new JPanel();
 		jPanel.setLayout(new GridLayout(GameManager.Instance().maxSize,GameManager.Instance().maxSize));
@@ -352,17 +347,45 @@ public class Visuals
 		
 		this.pane.add(jPanel); //SetComponentVisibility(6, false);
 		this.pane.add(this.playerTurnText); //SetComponentVisibility(7, false);
-
+		this.pane.add(this.winLossCounter); //SetComponentVisibility(8, false);
+		
 		this.window.setVisible(true);
+		
+		if(GameManager.Instance().currentPlayer instanceof AIPlayer)
+		{
+			GameManager.Instance().Run();
+		}					
 	}
 
+	public void ClearBoard()
+	{
+		for(int i = 0; i < GameManager.Instance().maxSize; i++)
+		{
+			for(int j = 0; j < GameManager.Instance().maxSize; j++)
+			{
+				this.board[i][j].setText(" ");			
+			}
+		}
+	}
+	
 	private void SetComponentVisibility(int index, boolean b)
 	{
 		pane.getComponents()[index].setVisible(b);
 	}
 
-	public void SetPlayerTurnText(String text)
+	public void SetCharacterOnButton(int x, int y, String c)
 	{
-		this.playerTurnText.setText(text);
+		// Set the button text to the string trimmed of all white space
+		String s = c.trim();
+		this.board[x][y].setText(s);
+	}
+	
+	public void UpdateText(String playerTurn)
+	{
+		String win = "Player " + GameManager.Instance().thePlayers[0].playerChar + "'s wins " + GameManager.Instance().thePlayers[0].wins
+				+ "  Player " + GameManager.Instance().thePlayers[1].playerChar + "'s wins " + GameManager.Instance().thePlayers[1].wins;
+		
+		this.playerTurnText.setText(playerTurn);
+		this.winLossCounter.setText(win);
 	}
 }

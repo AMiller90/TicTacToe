@@ -7,6 +7,8 @@ public abstract class Player
 	public boolean myTurn;
 	// Reference to the coordinates selected for character placement on the board
 	public int[] coords;
+	// Reference to number of games won
+	public int wins;
 	// Abstract function for player taking their turn
 	public abstract int[] TakeTurn();
 }
