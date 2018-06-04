@@ -1,3 +1,4 @@
+// Import the functionality for random number generation
 import java.util.Random;
 
 // The AIPlayer is a sub class of Player
@@ -35,11 +36,11 @@ public class AIPlayer extends Player
 	{
 		// Temp variable for max size of a row/column on the board
 		int maxSize = GameManager.Instance().maxSize;
+		// New Instance of the random class
 		Random rand = new Random();
 		
 		// Set up temp variables
-		int x = 0;
-		int y = 0;
+		int x, y = 0;
 		
 		// Randomize numbers between 0 and max size of row/columns on the board
 		x = rand.nextInt(maxSize);
@@ -59,7 +60,7 @@ public class AIPlayer extends Player
 	// Check neighbor slots and find an empty one. Takes an array of integers as reference for storing.
 	private void PlacementAlgorithm(int[] coords)
 	{
-		// Store temp variable of the maxsize of row/columns and subtract 1
+		// Store temporary variable of the max size of row/columns and subtract 1
 		int max = GameManager.Instance().maxSize - 1;
 		
 		// Get the slot to check neighbors from

@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 // The RealPlayer class is a sub class of Player
 public class RealPlayer extends Player
 {
@@ -16,7 +14,8 @@ public class RealPlayer extends Player
 		this.coords = new int[2];
 	}
 	
-	// Take Turn function used for the Real Player taking its turn
+	// Take Turn function used for the Real Player taking its turn. Returns the players coordinates.
+	// The functionality of a RealPlayer selecting coordinates is taken place in the Visuals class.
 	public int[] TakeTurn()
 	{
 		// Return the coordinates

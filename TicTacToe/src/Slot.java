@@ -1,11 +1,8 @@
-
 // The slot class. Represents slots on the board
 public class Slot {
 
-	// Public integer representing the slots x position on the board
-	public int X;
-	// Public integer representing the slots y position on the board
-	public int Y;
+	// Public integers representing the slots x and y positions on the board
+	public int X , Y;
 	// Public char representing the slots character on the board
 	public char slotChar;
 	

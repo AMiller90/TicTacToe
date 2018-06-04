@@ -9,6 +9,6 @@ public abstract class Player
 	public int[] coords;
 	// Reference to number of games won
 	public int wins;
-	// Abstract function for player taking their turn
+	// Abstract function for a player taking their turn
 	public abstract int[] TakeTurn();
 }

@@ -1,25 +1,24 @@
-import java.util.Scanner;
-
 // The GameManager Class. Holds all logic to game play and is a singleton.
 // Final keyword means this class can not be inherited from.
 public final class GameManager
 {
-	// Reference to the max size of rows/columns of board
+	// Reference to the max size of rows/columns of board. Default is 3.
 	public int maxSize = 3;
 	// Reference to the board
 	private Slot[][] Board;
 	// Reference to the players
 	public Player[] thePlayers;
-	//Reference to the turn count of the game
+	// Reference to the turn count of the game
 	private int TurnCount;
 	// Reference to the current player
 	public Player currentPlayer;
-	// Reference to the player 1 character
-	private char p1Char;
-	// Reference to the player 2 character
-	private char p2Char;
+	// Reference to the player 1  and player 2 characters
+	private char p1Char, p2Char;
 	// Reference to the AI Choice
 	private boolean AIChoice;
+	
+	// Private static instance reference to this class
+	private static GameManager instance;
 	
 	// Private constructor
 	private GameManager()
@@ -32,9 +31,6 @@ public final class GameManager
 		instance = this;
 	}
 
-	// Private static instance reference
-	private static GameManager instance;
-	
 	// Public static Instance function used to return the instance of this class
 	public static GameManager Instance()
 	{
@@ -59,15 +55,16 @@ public final class GameManager
 	    Visuals.Instance();
 	}
 	
-	// Public Run function.
+	// Public Run function. Runs the game logic of checking for a win/tie game
 	public void Run()
 	{
-		// Temp coords
+		// Temporary coords
 		int[] coords;
 		
+		// Set the coords to the returned coordinates of the current player taking its turn
 		coords = this.currentPlayer.TakeTurn();
 		
-		// Check for empty slot 
+		// Check for empty slot at the given coordinates
 		if(this.getSlot(coords[0], coords[1]).slotChar == ' ')
 		{
 			// Increase the turn count
@@ -88,14 +85,15 @@ public final class GameManager
 				this.currentPlayer.wins++;				
 				// Call Play Again function
 				this.PlayAgain();
-				Visuals.Instance().UpdateText("New Game! It is Player " + currentPlayer.playerChar + "'s turn");
+				// Update the text to say it is now a new game and whose turn it is
+				Visuals.Instance().UpdateText("Player " + c + " wins! New Game! It is Player " + currentPlayer.playerChar + "'s turn");
 				
 			} // If the turn count is equal to the size of the board then it is a tie
 			else if(this.TurnCount == (this.maxSize * this.maxSize))
 			{
 				// Call Play Again Function
 				this.PlayAgain();
-				 // Update the Visuals Text
+				// Update the text to say it is now a new game and whose turn it is
 				Visuals.Instance().UpdateText("Tie Game! New Game! It is Player " + currentPlayer.playerChar + "'s turn");
 			}
 			else // Else if there is no winner and no tie then change turns 
@@ -106,7 +104,7 @@ public final class GameManager
 				
 				// Set the new current player
 				this.currentPlayer = (this.thePlayers[0].myTurn) ? this.thePlayers[0] : this.thePlayers[1];
-				 // Update the Visuals Text
+				// Update the text to say whose turn it is
 				Visuals.Instance().UpdateText("It is Player " + currentPlayer.playerChar + "'s turn");
 				
 				// If the current player is AI then run the function again so it can take its turn
@@ -143,6 +141,7 @@ public final class GameManager
 	    
 	    // Player that has X always goes first
 	    currentPlayer = (this.p1Char == 'X') ? this.thePlayers[0] : this.thePlayers[1];
+	    // Set the current players turn to true
 	    currentPlayer.myTurn = true;
 	}
 	
@@ -159,45 +158,41 @@ public final class GameManager
 			}
 		}
 		
+		// Clear the visuals board
 		Visuals.Instance().ClearBoard();
 			
 	}
 	
 	// Private PlayAgain Function. Gives the user the choice of playing again or not.
 	private void PlayAgain()
-	{
-			Player winner = this.currentPlayer;
-			
-			// Call the ClearBoard function
-			this.ClearBoard();
-			// Set the turn count back to 0
-			this.TurnCount = 0;
-			
-			// Reset whose turn it is
-			// Player that has X always goes first
-		    if(this.thePlayers[0].playerChar == 'X')
-		    { 	// Set player 1 to true
-		    	this.thePlayers[0].myTurn = true;
-		    	// Set player 2 to false
-		    	this.thePlayers[1].myTurn = false;
-		    	// Set the currentPlayer
-		    	this.currentPlayer = this.thePlayers[0];
-		    }
-		    else // Player 1 has O
-		    {// Set player 1 to false
-		    	this.thePlayers[0].myTurn = false;
-		    	// Set player 2 to true
-		    	this.thePlayers[1].myTurn = true;
-		    	// Set the currentPlayer
-		    	this.currentPlayer = this.thePlayers[1];
-		    }
-		    
-		    // Update the Visuals Text
-			Visuals.Instance().UpdateText("Player " + winner.playerChar + " wins! New Game! It is Player " + currentPlayer.playerChar + "'s turn");
-			
-			if(GameManager.Instance().currentPlayer instanceof AIPlayer)
-				Run();
+	{		
+		// Call the ClearBoard function
+		this.ClearBoard();
+		// Set the turn count back to 0
+		this.TurnCount = 0;
 		
+		// Reset whose turn it is
+		// Player that has X always goes first
+	    if(this.thePlayers[0].playerChar == 'X')
+	    { 	// Set player 1 to true
+	    	this.thePlayers[0].myTurn = true;
+	    	// Set player 2 to false
+	    	this.thePlayers[1].myTurn = false;
+	    	// Set the currentPlayer
+	    	this.currentPlayer = this.thePlayers[0];
+	    }
+	    else // Player 1 has O
+	    {// Set player 1 to false
+	    	this.thePlayers[0].myTurn = false;
+	    	// Set player 2 to true
+	    	this.thePlayers[1].myTurn = true;
+	    	// Set the currentPlayer
+	    	this.currentPlayer = this.thePlayers[1];
+	    }
+	    
+	    // If the new current player is an AIPlayer then call the Run function so it can take its turn
+		if(GameManager.Instance().currentPlayer instanceof AIPlayer)
+			Run();		
 	}
 	
 	// Private CheckForWinner Function. Takes a Slot as an argument to check and the character to check against.
@@ -224,7 +219,7 @@ public final class GameManager
 	// Private CheckRowAndColumn Function. Takes a Slot as an argument to check and the character to check against.
 	private boolean CheckRowAndColumn(Slot s, char c)
 	{
-		// Set up temp counter variable
+		// Set up temporary counter variable
 		int counter = 0;
 		
 		// Check the row X
@@ -278,7 +273,7 @@ public final class GameManager
 	// Private CheckDiagonals Function. Takes a Slot as an argument to check and the character to check against.
 	private boolean CheckDiagonals(Slot s, char c)
 	{
-		// Set up temp counter variable
+		// Set up temporary counter variable
 		int counter = 0;
 		// Get temporary variable for size - 2
 		int size = this.maxSize - 2;
@@ -376,7 +371,7 @@ public final class GameManager
 		this.p2Char = c2;
 	}
 
-	// Public setAIChoice Function. Sets the AI Choice to te passed in argument
+	// Public setAIChoice Function. Sets the AI Choice to the passed in argument
 	public void setAIChoice(boolean ai)
 	{
 		// Set AIChoice to ai
